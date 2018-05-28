@@ -102,12 +102,12 @@ def SearchLibrary():
                         if tel[0] is not '0':
                             tel = "02-" + tel
                             pass
-                            DataList.append((subitem[15].firstChild.nodeValue,
-                                         subitem[13].firstChild.nodeValue,
+                            DataList.append((subitems[15].firstChild.nodeValue,
+                                         subitems[13].firstChild.nodeValue,
                                          tel))
                     else:
-                        DataList.append((subitem[15].firstChild.nodeValue,
-                                         subitem[13].firstChild.nodeValue,
+                        DataList.append((subitems[15].firstChild.nodeValue,
+                                         subitems[13].firstChild.nodeValue,
                                          "-"))
 
             for i in range(len(DataList)):
