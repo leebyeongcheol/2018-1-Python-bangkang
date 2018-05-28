@@ -76,7 +76,7 @@ def SearchLibrary():
     req = conn.getresponse()
     global DataList
     DataList.clear()
-
+    
 InitTopText()
 InitSearchListBox()
 InitInputLabel()
