@@ -76,14 +76,79 @@ def SearchLibrary():
     req = conn.getresponse()
     global DataList
     DataList.clear()
-    
+
+    if req.status == 200:
+        BooksDoc = req.read().decode('utf-8')
+        if BooksDoc == None:
+            print("에러")
+        else:
+            parseData = parseString(BooksDoc)
+            GeoInfoLibrary = parseData.childNodes
+            row = GeoInfoLibrary[0].childNodes
+            for item in row:
+                if item.nodeName == "row":
+                    subitems = item.childNodes
+
+                    if subitems[3].firstChild.nodeValue == InputLabel.get():
+                        pass
+                    elif subitems[5].firstChild.nodeValue == InputLabel.get():
+                        pass
+                    else:
+                        continue
+
+                    if subitems[29].firstChile is not None:
+                        tel = str(subitems[29].firstChild.nodeValue)
+                        pass
+                        if tel[0] is not '0':
+                            tel = "02-" + tel
+                            pass
+                            DataList.append((subitem[15].firstChild.nodeValue,
+                                         subitem[13].firstChild.nodeValue,
+                                         tel))
+                    else:
+                        DataList.append((subitem[15].firstChild.nodeValue,
+                                         subitem[13].firstChild.nodeValue,
+                                         "-"))
+
+            for i in range(len(DataList)):
+                RenderText.insert(INSERT, "[")
+                RenderText.insert(INSERT, i+1)
+                RenderText.insert(INSERT, "]")
+                RenderText.insert(INSERT, "시설명 : ")
+                RenderText.insert(INSERT, DataList[i][0])
+                RenderText.insert(INSERT, "\n")
+                RenderText.insert(INSERT, "주소: ")
+                RenderText.insert(INSERT, DataList[i][1])
+                RenderText.insert(INSERT, "\n")
+                RenderText.insert(INSERT, "전화번호: ")
+                RenderText.insert(INSERT, DataList[i][2])
+                RenderText.insert(INSERT, "\n\n")
+
+
+def InitRenderText():
+    global RenderText
+
+    RenderTextScrollbar = Scrollbar(g_Tk)
+    RenderTextScrollbar.pack()
+    RenderTextScrollbar.place(x=375, y=200)
+
+    TempFont = font.Font(g_Tk, size=10, family='Consolas')
+    RenderText = Text(g_Tk, width=49, height=27, borderwidth=12,
+                      relief='ridge', yscrollcommand=RenderTextScrollbar.set)
+    RenderText.pack()
+    RenderText.place(x=10, y=215)
+    RenderTextScrollbar.config(command=RenderText.yview)
+    RenderTextScrollbar.pack(side=RIGHT, fill=BOTH)
+
+    RenderText.configure(state='disabled')
+
 InitTopText()
 InitSearchListBox()
 InitInputLabel()
 InitSearchButton()
 InitRenderText()
-InitSendEmailButton()
-InitSortListBox()
-InitSortButton()
+#InitSendEmailButton()
+#InitSortListBox()
+#InitSortButton()
 
 g_Tk.mainloop()
