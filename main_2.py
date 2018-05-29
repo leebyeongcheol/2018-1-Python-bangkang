@@ -19,6 +19,7 @@ def LoadXML():
     #servervalue = "&sidoName=" + urlencode(self.LocationBoxData) + "&numOfRows=999&pageSize=999&pageNo=1&startPage=1"
     servervalue = "&numOfRows=999&pageSize=999&pageNo=1&startPage=1&sidoName=" + urlencode(myLocationBoxData) + "&searchCondition=HOUR"
     areaData = openAPItoXML(serverurl, myServerKey, servervalue)
+    #t1 = print(getPasingData(areaData,"item"))
 
 def Base64_Encode(s):
     return base64.b64encode(s.encode('utf-8'))
@@ -43,6 +44,22 @@ def openAPItoXML(server, key, value):
     with opener.open(urldata) as f:
         data = f.read(300000).decode('utf-8') # 300000bytes 를 utf-8로 변환하여 읽어온다.  변환이 없을경우 unicode로 받아온다.
     return data
+
+def getPasingData(xmlData, motherData):
+    doc = parseString(xmlData)
+    cityList = doc.getElementsByTagName(motherData)
+    citySize = len(cityList)
+    list = []
+    for index in range(citySize):
+        mphms = cityList[index].getElementsByTagName("dataTime")
+        list.append(str(mphms[0].firstChild.data))
+        mphms = cityList[index].getElementsByTagName("cityName")
+        list.append(str(mphms[0].firstChild.data))
+        mphms = cityList[index].getElementsByTagName("pm10Value")
+        list.append(str(mphms[0].firstChild.data))
+        mphms = cityList[index].getElementsByTagName("pm25Value")
+        list.append(str(mphms[0].firstChild.data))
+    return list
 
 def addParsingDicList(xmlData, motherData, childData):
     # 파싱된 데이터를 리스트에 넣어서 리턴 한다.
@@ -124,109 +141,28 @@ def InitSearchButton():
 
 
 def SearchButtonAction():
+    global InputLabel
     global SearchListBox
-
+    global myLocationBoxData
+    myLocationBoxData = str(InputLabel.get())
     RenderText.configure(state='normal')
     RenderText.delete(0.0, END)
-    iSearchIndex = SearchListBox.curselection()[0]
-
-    if iSearchIndex == 0:
-        myLocationBoxData = "서울"
-    elif iSearchIndex == 1:
-        #pass  # SearchGoodFoodService()
-        myLocationBoxData = "부산"
-    elif iSearchIndex == 2:
-        #pass  # SearchMarket()
-        myLocationBoxData = "대구"
-    elif iSearchIndex == 3:
-        #pass#SearchCultural()
-        myLocationBoxData = "인천"
-    elif iSearchIndex == 4:
-        myLocationBoxData = "광주"
-    elif iSearchIndex == 5:
-        myLocationBoxData = "대전"
-    elif iSearchIndex == 6:
-        myLocationBoxData = "울산"
-    elif iSearchIndex == 7:
-        myLocationBoxData = "경기"
-    elif iSearchIndex == 8:
-        myLocationBoxData = "강원"
-    elif iSearchIndex == 9:
-        myLocationBoxData = "충북"
-    elif iSearchIndex == 10:
-        myLocationBoxData = "충남"
-    elif iSearchIndex == 11:
-        myLocationBoxData = "전북"
-    elif iSearchIndex == 12:
-        myLocationBoxData = "전남"
-    elif iSearchIndex == 13:
-        myLocationBoxData = "경북"
-    elif iSearchIndex == 14:
-        myLocationBoxData = "경남"
-    elif iSearchIndex == 15:
-        myLocationBoxData = "제주"
-    elif iSearchIndex == 16:
-        myLocationBoxData = "세종"
-
+    #iSearchIndex = SearchListBox.curselection()[0]
+    #iSearchIndex = SearchListBox.curselection()[0]
+    SearchLibrary()
     RenderText.configure(state='disabled')
 
 
+
 def SearchLibrary():
-    import http.client
-    from xml.dom.minidom import parse, parseString
-    conn = http.client.HTTPConnection("openAPI.seoul.go.kr:8088")
-    conn.request("GET", "/6b4f54647867696c3932474d68794c/xml/GeoInfoLibrary/1/800")
-    req = conn.getresponse()
-    global DataList
-    DataList.clear()
-
-
-    if req.status == 200:
-        BooksDoc = req.read().decode('utf-8')
-        if BooksDoc == None:
-            print("에러")
-        else:
-            parseData = parseString(BooksDoc)
-            GeoInfoLibrary = parseData.childNodes
-            row = GeoInfoLibrary[0].childNodes
-            for item in row:
-                if item.nodeName == "row":
-                    subitems = item.childNodes
-
-                    if subitems[3].firstChild.nodeValue == InputLabel.get():
-                        pass
-                    elif subitems[5].firstChild.nodeValue == InputLabel.get():
-                        pass
-                    else:
-                        continue
-
-                    if subitems[29].firstChile is not None:
-                        tel = str(subitems[29].firstChild.nodeValue)
-                        pass
-                        if tel[0] is not '0':
-                            tel = "02-" + tel
-                            pass
-                            DataList.append((subitems[15].firstChild.nodeValue,
-                                         subitems[13].firstChild.nodeValue,
-                                         tel))
-                    else:
-                        DataList.append((subitems[15].firstChild.nodeValue,
-                                         subitems[13].firstChild.nodeValue,
-                                         "-"))
-
-            for i in range(len(DataList)):
-                RenderText.insert(INSERT, "[")
-                RenderText.insert(INSERT, i+1)
-                RenderText.insert(INSERT, "]")
-                RenderText.insert(INSERT, "시설명 : ")
-                RenderText.insert(INSERT, DataList[i][0])
-                RenderText.insert(INSERT, "\n")
-                RenderText.insert(INSERT, "주소: ")
-                RenderText.insert(INSERT, DataList[i][1])
-                RenderText.insert(INSERT, "\n")
-                RenderText.insert(INSERT, "전화번호: ")
-                RenderText.insert(INSERT, DataList[i][2])
-                RenderText.insert(INSERT, "\n\n")
+    serverurl = "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnMesureSidoLIst?serviceKey="
+    servervalue = "&numOfRows=999&pageSize=999&pageNo=1&startPage=1&sidoName=" + urlencode(myLocationBoxData) + "&searchCondition=HOUR"
+    areaData = openAPItoXML(serverurl, myServerKey, servervalue)
+    req = (getPasingData(areaData, "item"))
+    for item in req:
+        RenderText.insert(INSERT, item)
+        print(item)
+        RenderText.insert(INSERT, "\n")
 
 
 def InitRenderText():
@@ -251,6 +187,7 @@ InitSearchListBox()
 InitInputLabel()
 InitSearchButton()
 InitRenderText()
+SearchLibrary()
 #InitSendEmailButton()
 #InitSortListBox()
 #InitSortButton()
