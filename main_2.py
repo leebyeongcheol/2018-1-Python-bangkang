@@ -56,9 +56,9 @@ def getPasingData(xmlData, motherData):
         mphms = cityList[index].getElementsByTagName("cityName")
         list.append(str("시/군/구 : " + mphms[0].firstChild.data))
         mphms = cityList[index].getElementsByTagName("pm10Value")
-        list.append(str("PM10 수치  : " + mphms[0].firstChild.data))
+        list.append(str("PM10 : " + mphms[0].firstChild.data))
         mphms = cityList[index].getElementsByTagName("pm25Value")
-        list.append(str("PM25 수치  : " + mphms[0].firstChild.data + "\n"))
+        list.append(str("PM25 : " + mphms[0].firstChild.data + "\n"))
     return list
 
 def addParsingDicList(xmlData, motherData, childData):
