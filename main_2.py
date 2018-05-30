@@ -52,13 +52,13 @@ def getPasingData(xmlData, motherData):
     list = []
     for index in range(citySize):
         mphms = cityList[index].getElementsByTagName("dataTime")
-        list.append(str(mphms[0].firstChild.data))
+        list.append(str("시간기준 : "+ mphms[0].firstChild.data))
         mphms = cityList[index].getElementsByTagName("cityName")
-        list.append(str(mphms[0].firstChild.data))
+        list.append(str("시/군/구 : " + mphms[0].firstChild.data))
         mphms = cityList[index].getElementsByTagName("pm10Value")
-        list.append(str(mphms[0].firstChild.data))
+        list.append(str("PM10 수치  : " + mphms[0].firstChild.data))
         mphms = cityList[index].getElementsByTagName("pm25Value")
-        list.append(str(mphms[0].firstChild.data))
+        list.append(str("PM25 수치  : " + mphms[0].firstChild.data + "\n"))
     return list
 
 def addParsingDicList(xmlData, motherData, childData):
@@ -132,7 +132,6 @@ def InitInputLabel():
     InputLabel.pack()
     InputLabel.place(x=10, y=105)
 
-
 def InitSearchButton():
     TempFont = font.Font(g_Tk, size=12, weight='bold', family='Consolas')
     SearchButton = Button(g_Tk, font=TempFont, text="검색", command=SearchButtonAction)
@@ -159,6 +158,7 @@ def SearchLibrary():
     servervalue = "&numOfRows=999&pageSize=999&pageNo=1&startPage=1&sidoName=" + urlencode(myLocationBoxData) + "&searchCondition=HOUR"
     areaData = openAPItoXML(serverurl, myServerKey, servervalue)
     req = (getPasingData(areaData, "item"))
+
     for item in req:
         RenderText.insert(INSERT, item)
         print(item)
