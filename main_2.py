@@ -4,14 +4,17 @@ import base64
 from tkinter import *
 from tkinter import font
 import tkinter.messagebox
+import smtplib
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
 
 g_Tk = Tk()
-g_Tk.geometry("400x600+750+200")
+g_Tk.geometry("750x500+750+200")
 DataList = []
 
 myServerKey = "1EV5%2F0ZUld5RHLecMPsw127dsW%2B6rsTJ38ep3vOR8lr6%2BEP37QjoJ7UySPDFNcyQq67lWLPlRMZEj1KSHGe%2F0g%3D%3D"
 #myLocationBoxData = ['서울','부산','대구','인천','광주','대전','울산','경기','강원','충북','충남','전북','경북','경남','제주','세종']
-myLocationBoxData = "서울"
+myLocationBoxData = "0"
 
 def LoadXML():
     #serverurl = "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?ServiceKey="
@@ -50,15 +53,27 @@ def getPasingData(xmlData, motherData):
     cityList = doc.getElementsByTagName(motherData)
     citySize = len(cityList)
     list = []
+    global Contentdata
+    Contentdata = ""
+
     for index in range(citySize):
         mphms = cityList[index].getElementsByTagName("dataTime")
         list.append(str("시간기준 : "+ mphms[0].firstChild.data))
+        Contentdata += str("시간기준 : "+ mphms[0].firstChild.data) + str("\n")
+
         mphms = cityList[index].getElementsByTagName("cityName")
         list.append(str("시/군/구 : " + mphms[0].firstChild.data))
+        Contentdata += str("시/군/구 : " + mphms[0].firstChild.data) + str("\n")
+
         mphms = cityList[index].getElementsByTagName("pm10Value")
-        list.append(str("PM10 : " + mphms[0].firstChild.data))
+        list.append(str("PM10 : " + mphms[0].firstChild.data) + "㎍/m³")
+        Contentdata += str("PM10 : " + mphms[0].firstChild.data + "㎍/m³") + str("\n")
+
         mphms = cityList[index].getElementsByTagName("pm25Value")
-        list.append(str("PM25 : " + mphms[0].firstChild.data + "\n"))
+        list.append(str("PM2.5 : " + mphms[0].firstChild.data + "㎍/m³" + "\n"))
+        Contentdata += str("PM2.5 : " + mphms[0].firstChild.data + "㎍/m³") + str("\n\n")
+
+
     return list
 
 def addParsingDicList(xmlData, motherData, childData):
@@ -85,21 +100,21 @@ def addParsingDataString(xmlData, motherData, childData):
             return str(mphms[0].firstChild.data)
 
 def InitTopText():
-    TempFont = font.Font(g_Tk, size=20, weight='bold', family='Consolas')
-    MainText = Label(g_Tk, font=TempFont, text="[시군구별 실시간 평균조회]")
+    TempFont = font.Font(g_Tk, size=18, weight='bold', family='Consolas')
+    MainText = Label(g_Tk, font=TempFont, text="미세먼지 시군구별 실시간 조회")
     MainText.pack()
-    MainText.place(x=20)
+    MainText.place(x=130)
 
 def InitSearchListBox():
     global SearchListBox
     ListBoxScrollbar = Scrollbar(g_Tk)
     ListBoxScrollbar.pack()
-    ListBoxScrollbar.place(x=150, y=50)
+    ListBoxScrollbar.place(x=125, y=50)
 
     TempFont = font.Font(g_Tk, size=15, weight='bold', family='Consolas')
     SearchListBox = Listbox(g_Tk, font=TempFont,
                             activestyle='none',
-                            width = 10, height = 1, borderwidth = 12,
+                            width = 8, height = 1, borderwidth = 12,
                             relief = 'ridge',
                             yscrollcommand = ListBoxScrollbar.set)
 
@@ -128,15 +143,15 @@ def InitSearchListBox():
 def InitInputLabel():
     global InputLabel
     TempFont = font.Font(g_Tk, size=15, weight='bold', family='Consolas')
-    InputLabel = Entry(g_Tk, font=TempFont, width=26, borderwidth=12, relief='ridge')
+    InputLabel = Entry(g_Tk, font=TempFont, width=10, borderwidth=12, relief='ridge')
     InputLabel.pack()
-    InputLabel.place(x=10, y=105)
+    InputLabel.place(x=150, y=50)
 
 def InitSearchButton():
-    TempFont = font.Font(g_Tk, size=12, weight='bold', family='Consolas')
+    TempFont = font.Font(g_Tk, size=18, weight='bold', family='Consolas')
     SearchButton = Button(g_Tk, font=TempFont, text="검색", command=SearchButtonAction)
     SearchButton.pack()
-    SearchButton.place(x=330, y=110)
+    SearchButton.place(x=290, y=50)
 
 
 def SearchButtonAction():
@@ -170,17 +185,58 @@ def InitRenderText():
 
     RenderTextScrollbar = Scrollbar(g_Tk)
     RenderTextScrollbar.pack()
-    RenderTextScrollbar.place(x=375, y=200)
+    RenderTextScrollbar.place(x=375, y=50)
 
     TempFont = font.Font(g_Tk, size=10, family='Consolas')
-    RenderText = Text(g_Tk, width=49, height=27, borderwidth=12,
+    RenderText = Text(g_Tk, width=45, height=24, borderwidth=12,
                       relief='ridge', yscrollcommand=RenderTextScrollbar.set)
     RenderText.pack()
-    RenderText.place(x=10, y=215)
+    RenderText.place(x=10, y=150)
     RenderTextScrollbar.config(command=RenderText.yview)
     RenderTextScrollbar.pack(side=RIGHT, fill=BOTH)
 
     RenderText.configure(state='disabled')
+
+def InitSendEmailLabel():
+    global EmailLabel
+    TempFont = font.Font(g_Tk, size=15, weight='bold', family='Consolas')
+    EmailLabel = Entry(g_Tk, font=TempFont, width=23, borderwidth=12, relief='ridge')
+    EmailLabel.pack()
+    EmailLabel.place(x=10, y=100)
+
+def InitSendEmailButton():
+    TempFont = font.Font(g_Tk, size=18, weight='bold', family='Consolas')
+    MailButton = Button(g_Tk, font=TempFont, text="전송", command=SendEmailButtonAction)
+    MailButton.pack()
+    MailButton.place(x=290, y=100)
+
+def SendEmailButtonAction():
+    global EmailLabel
+    global SearchListBox
+    global myLocationBoxData
+    global Contentdata
+    Mailadd = str(EmailLabel.get())
+    RenderText.configure(state='normal')
+    RenderText.delete(0.0, END)
+    #iSearchIndex = SearchListBox.curselection()[0]
+    #iSearchIndex = SearchListBox.curselection()[0]
+    #SearchLibrary()
+    sendMail(Mailadd, "실시간 미세먼지 오염도 정보", Contentdata)
+    RenderText.configure(state='disabled')
+
+
+def sendMail(ReviceMail, Subject, Content):
+    s = smtplib.SMTP("smtp.gmail.com",587) #SMTP 서버 설정
+    s.starttls() #STARTTLS 시작
+    s.login( Base64_Decode("bGJjaDEwMDRAZ21haWwuY29t"),Base64_Decode("ZWhvd2wxMjM="))
+    contents = Content
+    msg = MIMEText(contents, _charset='euc-kr')
+    msg['Subject'] = Subject
+    msg['From'] = Base64_Decode("bGJjaDEwMDRAZ21haWwuY29t")
+    msg['To'] = ReviceMail
+    s.sendmail( Base64_Decode("bGJjaDEwMDRAZ21haWwuY29t") , ReviceMail, msg.as_string())
+
+
 
 InitTopText()
 InitSearchListBox()
@@ -188,7 +244,9 @@ InitInputLabel()
 InitSearchButton()
 InitRenderText()
 SearchLibrary()
-#InitSendEmailButton()
+
+InitSendEmailButton()
+InitSendEmailLabel()
 #InitSortListBox()
 #InitSortButton()
 
