@@ -31,6 +31,7 @@ def locName(locParam):
            '%EC%84%B8%EC%A2%85')
 
     for i in range(len(locname)):
+        #print(spam.strlen("test"))
         if (locParam == locname[i]):
             return loc[i]
 
@@ -101,7 +102,7 @@ def handle(msg):
 
 bot.message_loop(handle)
 
-print('Listening...')
+#print('Listening...')
 
 while 1:
     time.sleep(10)
