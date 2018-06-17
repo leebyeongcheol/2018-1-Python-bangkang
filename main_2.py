@@ -105,12 +105,6 @@ def InitTopText():
     MainText.pack()
     MainText.place(x=130)
 
-def InitEmailText():
-    TempFont = font.Font(g_Tk, size=18, weight='bold', family='Consolas')
-    MainText = Label(g_Tk, font=TempFont, text="미세먼지 시군구별 실시간 조회")
-    MainText.pack()
-    MainText.place(x=130)
-
 
 def InitSearchListBox():
     global SearchListBox
@@ -204,12 +198,19 @@ def InitRenderText():
 
     RenderText.configure(state='disabled')
 
+
+def InitEmailText():
+    TempFont = font.Font(g_Tk, size=11, weight='bold', family='Consolas')
+    MainText = Label(g_Tk, font=TempFont, text="E-Mail\nAddress")
+    MainText.pack()
+    MainText.place(x=10,y =105)
+
 def InitSendEmailLabel():
     global EmailLabel
-    TempFont = font.Font(g_Tk, size=15, weight='bold', family='Consolas')
-    EmailLabel = Entry(g_Tk, font=TempFont, width=23, borderwidth=12, relief='ridge')
+    TempFont = font.Font(g_Tk, size=10, weight='bold', family='Consolas')
+    EmailLabel = Entry(g_Tk, font=TempFont, width=26, borderwidth=12, relief='ridge')
     EmailLabel.pack()
-    EmailLabel.place(x=10, y=100)
+    EmailLabel.place(x=80, y=105)
 
 def InitSendEmailButton():
     TempFont = font.Font(g_Tk, size=18, weight='bold', family='Consolas')
