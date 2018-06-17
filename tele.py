@@ -17,9 +17,6 @@ MAX_MSG_LENGTH = 300
 
 
 def locName(locParam):
-
-    print (locParam)
-
     locname = ('서울', '부산', '대구', '인천',
                '광주', '대전', '울산', '경기',
                '강원', '충북', '충남', '전북',
@@ -46,10 +43,8 @@ def sendMessage(user, msg):
 
 def getData(chat_id,station):
     stationname = locName(station)
-    print('get')
+
     if (stationname != '-1'):
-        print('-1111')
-        print(stationname)
         url = 'http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnMesureSidoLIst?' \
               'serviceKey=yFY%2BS0tRfVUf8ol%2FUjDARwS71qiyeewzzn7w%2Bv9JEQDV%2FmlRIbfelfcqdu5iTMyIWALgQ4GuFnmxtepshr7maw%3D%3D' \
               '&numOfRows=40&pageSize=40&pageNo=1&startPage=1'\
@@ -63,7 +58,7 @@ def getData(chat_id,station):
         data = pd.DataFrame()
         dataList = xmlsoup.findAll("item")
 
-        print(dataList)
+        #print(dataList)
         outList = []
 
         for i in dataList:
@@ -74,7 +69,6 @@ def getData(chat_id,station):
 
             outList = [i.datatime.string, i.cityname.string, i.pm10value.string,
                        i.pm25value.string]
-
             print(outList)
 
             sendMessage(chat_id, '시간기준 : '+outList[0]+'\n'+'시/군/구 : '+outList[1]+'\n'+'PM1.0 : '+outList[2]+'㎍/m³'+'\n'+'PM2.5 : '+outList[3]+'㎍/m³'+'\n')
