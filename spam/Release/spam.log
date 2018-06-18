@@ -1,0 +1,14 @@
+﻿  spammodule.c
+spammodule.c(33): warning C4047: 'return': 'int'의 간접 참조 수준이 'PyObject *'과(와) 다릅니다.
+spammodule.c(50): warning C4113: 'int (__cdecl *)(PyObject *)'은(는) 'PyCFunction'과(와) 매개 변수 목록이 다릅니다.
+spammodule.c(50): warning C4047: '초기화 중': 'PyCFunction'의 간접 참조 수준이 'int (__cdecl *)(PyObject *)'과(와) 다릅니다.
+C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(1189,5): warning MSB8012: TargetPath(C:\Users\이병철\Desktop\2018-1스언어 텀프\2018-1-Python-bangkang\spam\Release\spam.dll) does not match the Linker's OutputFile property value (C:\Users\이병철\Desktop\2018-1스언어 텀프\2018-1-Python-bangkang\spam\Release\spam.pyd). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(1190,5): warning MSB8012: TargetExt(.dll) does not match the Linker's OutputFile property value (.pyd). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+     C:\Users\이병철\Desktop\2018-1스언어 텀프\2018-1-Python-bangkang\spam\Release\spam.lib 라이브러리 및 C:\Users\이병철\Desktop\2018-1스언어 텀프\2018-1-Python-bangkang\spam\Release\spam.exp 개체를 생성하고 있습니다.
+  코드를 생성하고 있습니다.
+  0 of 2 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  코드를 생성했습니다.
+  spam.vcxproj -> C:\Users\이병철\Desktop\2018-1스언어 텀프\2018-1-Python-bangkang\spam\Release\spam.dll
+  spam.vcxproj -> C:\Users\이병철\Desktop\2018-1스언어 텀프\2018-1-Python-bangkang\spam\Release\spam.pdb (Full PDB)

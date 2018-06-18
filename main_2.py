@@ -7,6 +7,7 @@ import tkinter.messagebox
 import smtplib
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
+import spam
 
 g_Tk = Tk()
 g_Tk.geometry("750x500+750+200")
@@ -236,13 +237,13 @@ def SendEmailButtonAction():
 def sendMail(ReviceMail, Subject, Content):
     s = smtplib.SMTP("smtp.gmail.com",587) #SMTP 서버 설정
     s.starttls() #STARTTLS 시작
-    s.login( Base64_Decode("bGJjaDEwMDRAZ21haWwuY29t"),Base64_Decode("ZWhvd2wxMjM="))
+    s.login( Base64_Decode(spam.getemail()),Base64_Decode("ZWhvd2wxMjM="))
     contents = Content
     msg = MIMEText(contents, _charset='euc-kr')
     msg['Subject'] = Subject
-    msg['From'] = Base64_Decode("bGJjaDEwMDRAZ21haWwuY29t")
+    msg['From'] = Base64_Decode(spam.getemail())
     msg['To'] = ReviceMail
-    s.sendmail( Base64_Decode("bGJjaDEwMDRAZ21haWwuY29t") , ReviceMail, msg.as_string())
+    s.sendmail( Base64_Decode(spam.getemail()) , ReviceMail, msg.as_string())
 
 
 
