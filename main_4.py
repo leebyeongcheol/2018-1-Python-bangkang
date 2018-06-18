@@ -7,10 +7,12 @@ import tkinter.messagebox
 import smtplib
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
+import spam
 
 g_Tk = Tk()
-g_Tk.geometry("750x500+750+200")
+g_Tk.geometry("400x500+750+200")
 DataList = []
+photo = PhotoImage(file="0.gif")
 
 myServerKey = "1EV5%2F0ZUld5RHLecMPsw127dsW%2B6rsTJ38ep3vOR8lr6%2BEP37QjoJ7UySPDFNcyQq67lWLPlRMZEj1KSHGe%2F0g%3D%3D"
 #myLocationBoxData = ['서울','부산','대구','인천','광주','대전','울산','경기','강원','충북','충남','전북','경북','경남','제주','세종']
@@ -53,6 +55,9 @@ def getPasingData(xmlData, motherData):
     cityList = doc.getElementsByTagName(motherData)
     citySize = len(cityList)
     list = []
+    pm10sum = 0
+    pm25sum = 0
+    pmcnt = 0
     global Contentdata
     Contentdata = ""
 
@@ -68,11 +73,17 @@ def getPasingData(xmlData, motherData):
         mphms = cityList[index].getElementsByTagName("pm10Value")
         list.append(str("PM10 : " + mphms[0].firstChild.data) + "㎍/m³")
         Contentdata += str("PM10 : " + mphms[0].firstChild.data + "㎍/m³") + str("\n")
+        pm10sum += int(mphms[0].firstChild.data)
+
 
         mphms = cityList[index].getElementsByTagName("pm25Value")
         list.append(str("PM2.5 : " + mphms[0].firstChild.data + "㎍/m³" + "\n"))
         Contentdata += str("PM2.5 : " + mphms[0].firstChild.data + "㎍/m³") + str("\n\n")
+        #pm25sum += int(mphms[0].firstChild.data)
 
+        pmcnt+=1
+
+    Image10(pm10sum, pmcnt)
 
     return list
 
@@ -100,59 +111,17 @@ def addParsingDataString(xmlData, motherData, childData):
             return str(mphms[0].firstChild.data)
 
 def InitTopText():
-    TempFont = font.Font(g_Tk, size=18, weight='bold', family='Consolas')
-    MainText = Label(g_Tk, font=TempFont, text="미세먼지 시군구별 실시간 조회")
-    MainText.pack()
-    MainText.place(x=130)
-
-def InitEmailText():
-    TempFont = font.Font(g_Tk, size=18, weight='bold', family='Consolas')
-    MainText = Label(g_Tk, font=TempFont, text="미세먼지 시군구별 실시간 조회")
-    MainText.pack()
-    MainText.place(x=130)
-
-
-def InitSearchListBox():
-    global SearchListBox
-    ListBoxScrollbar = Scrollbar(g_Tk)
-    ListBoxScrollbar.pack()
-    ListBoxScrollbar.place(x=125, y=50)
-
     TempFont = font.Font(g_Tk, size=15, weight='bold', family='Consolas')
-    SearchListBox = Listbox(g_Tk, font=TempFont,
-                            activestyle='none',
-                            width = 8, height = 1, borderwidth = 12,
-                            relief = 'ridge',
-                            yscrollcommand = ListBoxScrollbar.set)
-
-    SearchListBox.insert(1, "서울")
-    SearchListBox.insert(2, "부산")
-    SearchListBox.insert(3, "대구")
-    SearchListBox.insert(4, "인천")
-    SearchListBox.insert(5, "광주")
-    SearchListBox.insert(6, "대전")
-    SearchListBox.insert(7, "울산")
-    SearchListBox.insert(8, "경기")
-    SearchListBox.insert(9, "강원")
-    SearchListBox.insert(10, "충북")
-    SearchListBox.insert(11, "충남")
-    SearchListBox.insert(12, "전북")
-    SearchListBox.insert(13, "전남")
-    SearchListBox.insert(14, "경북")
-    SearchListBox.insert(15, "경남")
-    SearchListBox.insert(16, "제주")
-    SearchListBox.insert(17, "세종")
-    SearchListBox.pack()
-    SearchListBox.place(x=10, y=50)
-    ListBoxScrollbar.config(command=SearchListBox.yview)
-
+    MainText = Label(g_Tk, font=TempFont, text="미세먼지 시군구별 실시간 조회")
+    MainText.pack()
+    MainText.place(x=80)
 
 def InitInputLabel():
     global InputLabel
-    TempFont = font.Font(g_Tk, size=15, weight='bold', family='Consolas')
-    InputLabel = Entry(g_Tk, font=TempFont, width=10, borderwidth=12, relief='ridge')
+    TempFont = font.Font(g_Tk, size=10, weight='bold', family='Consolas')
+    InputLabel = Entry(g_Tk, font=TempFont, width=26, borderwidth=13, relief='ridge')
     InputLabel.pack()
-    InputLabel.place(x=150, y=50)
+    InputLabel.place(x=80, y=55)
 
 def InitSearchButton():
     TempFont = font.Font(g_Tk, size=18, weight='bold', family='Consolas')
@@ -173,8 +142,6 @@ def SearchButtonAction():
     SearchLibrary()
     RenderText.configure(state='disabled')
 
-
-
 def SearchLibrary():
     serverurl = "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnMesureSidoLIst?serviceKey="
     servervalue = "&numOfRows=999&pageSize=999&pageNo=1&startPage=1&sidoName=" + urlencode(myLocationBoxData) + "&searchCondition=HOUR"
@@ -185,7 +152,6 @@ def SearchLibrary():
         RenderText.insert(INSERT, item)
         print(item)
         RenderText.insert(INSERT, "\n")
-
 
 def InitRenderText():
     global RenderText
@@ -204,12 +170,18 @@ def InitRenderText():
 
     RenderText.configure(state='disabled')
 
+def InitEmailText():
+    TempFont = font.Font(g_Tk, size=11, weight='bold', family='Consolas')
+    MainText = Label(g_Tk, font=TempFont, text="E-Mail\nAddress")
+    MainText.pack()
+    MainText.place(x=10,y =105)
+
 def InitSendEmailLabel():
     global EmailLabel
-    TempFont = font.Font(g_Tk, size=15, weight='bold', family='Consolas')
-    EmailLabel = Entry(g_Tk, font=TempFont, width=23, borderwidth=12, relief='ridge')
+    TempFont = font.Font(g_Tk, size=10, weight='bold', family='Consolas')
+    EmailLabel = Entry(g_Tk, font=TempFont, width=26, borderwidth=12, relief='ridge')
     EmailLabel.pack()
-    EmailLabel.place(x=10, y=100)
+    EmailLabel.place(x=80, y=105)
 
 def InitSendEmailButton():
     TempFont = font.Font(g_Tk, size=18, weight='bold', family='Consolas')
@@ -231,32 +203,53 @@ def SendEmailButtonAction():
     sendMail(Mailadd, "실시간 미세먼지 오염도 정보", Contentdata)
     RenderText.configure(state='disabled')
 
-
 def sendMail(ReviceMail, Subject, Content):
     s = smtplib.SMTP("smtp.gmail.com",587) #SMTP 서버 설정
     s.starttls() #STARTTLS 시작
-    s.login( Base64_Decode("bGJjaDEwMDRAZ21haWwuY29t"),Base64_Decode("ZWhvd2wxMjM="))
+    s.login( Base64_Decode(spam.getemail()),Base64_Decode("ZWhvd2wxMjM="))
     contents = Content
     msg = MIMEText(contents, _charset='euc-kr')
     msg['Subject'] = Subject
-    msg['From'] = Base64_Decode("bGJjaDEwMDRAZ21haWwuY29t")
+    msg['From'] = Base64_Decode(spam.getemail())
     msg['To'] = ReviceMail
-    s.sendmail( Base64_Decode("bGJjaDEwMDRAZ21haWwuY29t") , ReviceMail, msg.as_string())
+    s.sendmail( Base64_Decode(spam.getemail()) , ReviceMail, msg.as_string())
 
+def Image10(sum, div):
+    global g_Tk
+    global photo
+    avg = sum/div
+    print(avg)
+    if(0<= avg <=30):
+        photo = PhotoImage(file="0.gif")
+    elif(30< avg <= 80):
+        photo = PhotoImage(file="1.gif")
+    elif (80 < avg <= 110):
+        photo = PhotoImage(file="2.gif")
+    elif (110 < avg <= 150):
+        photo = PhotoImage(file="3.gif")
+    elif (150 < avg):
+        photo = PhotoImage(file="4.gif")
+    imageLabel.configure(image = photo)
+    imageLabel.image = photo
 
 
 InitTopText()
-InitSearchListBox()
+#InitSearchListBox()
 InitInputLabel()
 InitSearchButton()
 InitRenderText()
-SearchLibrary()
+#SearchLibrary()
 
 InitEmailText()
 InitSendEmailButton()
 InitSendEmailLabel()
 #InitSortListBox()
 #InitSortButton()
+
+#imageLabel = Label(g_Tk, image=photo)
+#imageLabel.place(x=600, y=50)
+imageLabel=Label(g_Tk,image=photo,height=70,width=70)
+imageLabel.pack(anchor='w')
 
 LoadXML()
 
