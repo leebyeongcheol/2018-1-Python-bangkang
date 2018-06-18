@@ -24,26 +24,11 @@ spam_getemail(PyObject *self)
 		"전남", "경북", "경남", "제주",
 		"세종" };
 
-	/*return Py_BuildValue("yyyyyyyyyyyyyyyyy", '서울', '부산', '대구', '인천',
-		'광주', '대전', '울산', '경기',
-		'강원', '충북', '충남', '전북',
-		'전남', '경북', '경남', '제주',
-		'세종');*/
 
 	return Py_BuildValue("s","bGJjaDEwMDRAZ21haWwuY29t");
 	
 }
 
-//spam_citycode()
-//{
-//	string cityname[17] = { "%EC%84%9C%EC%9A%B8", "%EB%B6%80%EC%82%B0", "%EB%8C%80%EA%B5%AC", "%EC%9D%B8%EC%B2%9C",
-//		"%EA%B4%91%EC%A3%BC", "%EB%8C%80%EC%A0%84", "%EC%9A%B8%EC%82%B0", "%EA%B2%BD%EA%B8%B0",
-//		"%EA%B0%95%EC%9B%90", "%EC%A0%84%EC%A3%BC", "%EC%9D%B8%EC%B2%9C", "%EA%B0%95%EB%A6%89",
-//		"%EC%A0%84%EB%82%A8", "%EA%B2%BD%EB%B6%81", "%EA%B2%BD%EB%82%A8", "%EC%A0%9C%EC%A3%BC",
-//		"%EC%84%B8%EC%A2%85" };
-//
-//	return cityname;
-//}
 
 
 static PyMethodDef SpamMethods[] = {
