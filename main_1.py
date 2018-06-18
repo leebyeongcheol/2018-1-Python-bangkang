@@ -105,6 +105,12 @@ def InitTopText():
     MainText.pack()
     MainText.place(x=130)
 
+def InitEmailText():
+    TempFont = font.Font(g_Tk, size=18, weight='bold', family='Consolas')
+    MainText = Label(g_Tk, font=TempFont, text="미세먼지 시군구별 실시간 조회")
+    MainText.pack()
+    MainText.place(x=130)
+
 
 def InitSearchListBox():
     global SearchListBox
@@ -246,6 +252,7 @@ InitSearchButton()
 InitRenderText()
 SearchLibrary()
 
+InitEmailText()
 InitSendEmailButton()
 InitSendEmailLabel()
 #InitSortListBox()
