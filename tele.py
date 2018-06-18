@@ -9,6 +9,7 @@ import re
 import webbrowser
 import traceback
 import time
+import spam
 
 API_KEY = 'yFY%2BS0tRfVUf8ol%2FUjDARwS71qiyeewzzn7w%2Bv9JEQDV%2FmlRIbfelfcqdu5iTMyIWALgQ4GuFnmxtepshr7maw%3D%3D'
 TOKEN = '495825663:AAGLpyWUPwDO89RLbI-I-Tv63DzGYAGMozE'
@@ -17,11 +18,14 @@ MAX_MSG_LENGTH = 300
 
 
 def locName(locParam):
+    #for i in spam.citylist():
+
     locname = ('서울', '부산', '대구', '인천',
-               '광주', '대전', '울산', '경기',
-               '강원', '충북', '충남', '전북',
-               '전남', '경북', '경남', '제주',
-               '세종')
+              '광주', '대전', '울산', '경기',
+              '강원', '충북', '충남', '전북',
+              '전남', '경북', '경남', '제주',
+              '세종')
+
 
     loc = ('%EC%84%9C%EC%9A%B8', '%EB%B6%80%EC%82%B0', '%EB%8C%80%EA%B5%AC', '%EC%9D%B8%EC%B2%9C',
            '%EA%B4%91%EC%A3%BC', '%EB%8C%80%EC%A0%84', '%EC%9A%B8%EC%82%B0', '%EA%B2%BD%EA%B8%B0',
@@ -30,6 +34,8 @@ def locName(locParam):
            '%EC%84%B8%EC%A2%85')
 
     for i in range(len(locname)):
+        #print(spam.strlen("test"))
+        #print(spam.citylist())
         if (locParam == locname[i]):
             return loc[i]
 
@@ -100,7 +106,7 @@ def handle(msg):
 
 bot.message_loop(handle)
 
-print('Listening...')
+#print('Listening...')
 
 while 1:
     time.sleep(10)
